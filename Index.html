@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Accolink | Premium Guest Houses</title>
+
+<!-- Swiper -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --emerald:#0f766e;
+  --emerald-dark:#064e3b;
+  --gold:#c9a24d;
+  --bg:#0b0f0e;
+  --card:#111716;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:linear-gradient(180deg,#050807,var(--bg));
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+}
+
+header{
+  text-align:center;
+  padding:30px 20px;
+}
+
+header h1{
+  font-family:'Playfair Display',serif;
+  letter-spacing:1px;
+}
+
+header span{color:var(--gold)}
+
+#propertySearch{
+  margin-top:20px;
+  width:90%;
+  max-width:420px;
+  padding:14px 18px;
+  border-radius:30px;
+  border:none;
+  outline:none;
+  background:#0f172a;
+  color:white;
+}
+
+#mainGrid{
+  max-width:1200px;
+  margin:auto;
+  padding:30px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:30px;
+}
+
+.card{
+  background:linear-gradient(180deg,#0f1514,var(--card));
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 25px 60px rgba(0,0,0,.6);
+  transition:.4s;
+}
+
+.card:hover{
+  transform:translateY(-6px);
+}
+
+.swiper{
+  width:100%;
+  height:230px;
+}
+
+.swiper img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.content{
+  padding:18px;
+}
+
+.title{
+  font-family:'Playfair Display',serif;
+  font-size:1.4rem;
+}
+
+.location{
+  color:var(--muted);
+  margin:6px 0;
+}
+
+.price{
+  color:var(--gold);
+  margin:10px 0;
+}
+
+.amenities{
+  display:flex;
+  gap:14px;
+  color:var(--emerald);
+}
+
+.stats{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:14px;
+  color:var(--muted);
+}
+
+.fav{
+  cursor:pointer;
+}
+
+.fav.active{
+  color:#e11d48;
+}
+
+.book-btn{
+  margin-top:16px;
+  width:100%;
+  padding:14px;
+  border-radius:30px;
+  border:none;
+  cursor:pointer;
+  font-weight:500;
+  color:white;
+  background:linear-gradient(135deg,var(--emerald),var(--emerald-dark));
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1><span>Accolink</span> Premium Stays</h1>
+  <input id="propertySearch" placeholder="Search by name or location">
+</header>
+
+<div id="mainGrid"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+<script>
+// ================= DATA =================
+const listings = [
+{
+  name:"PunkinHeads Guest House",
+  location:"📍 Kasane Plateau",
+  price:"From P850 / night",
+  whatsapp:"26774938278",
+  images:[
+    "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/images/punkinheads/1.jpg",
+    "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/images/punkinheads/2.jpg",
+    "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/images/punkinheads/3.jpg"
+  ],
+  amenities:["wifi","breakfast","security","tv"],
+  views:0
+}
+];
+
+let favourites = JSON.parse(localStorage.getItem("favourites")) || [];
+const grid = document.getElementById("mainGrid");
+const search = document.getElementById("propertySearch");
+
+// ================= RENDER =================
+function render(data){
+  grid.innerHTML="";
+
+  data.forEach((house,i)=>{
+    house.views++;
+
+    const card=document.createElement("div");
+    card.className="card";
+
+    card.innerHTML=`
+      <div class="swiper s-${i}">
+        <div class="swiper-wrapper">
+          ${house.images.map(img=>`
+            <div class="swiper-slide">
+              <img src="${img}">
+            </div>`).join("")}
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="title">${house.name}</div>
+        <div class="location">${house.location}</div>
+        <div class="price">${house.price}</div>
+
+        <div class="amenities">
+          ${house.amenities.includes("wifi")?'<i class="fa-solid fa-wifi"></i>':''}
+          ${house.amenities.includes("breakfast")?'<i class="fa-solid fa-mug-hot"></i>':''}
+          ${house.amenities.includes("security")?'<i class="fa-solid fa-shield-halved"></i>':''}
+          ${house.amenities.includes("tv")?'<i class="fa-solid fa-tv"></i>':''}
+        </div>
+
+        <div class="stats">
+          <span><i class="fa-solid fa-eye"></i> ${house.views}</span>
+          <i class="fa-regular fa-heart fav ${favourites.includes(house.name)?"active":""}"></i>
+        </div>
+
+        <button class="book-btn">Book Now</button>
+      </div>
+    `;
+
+    // WhatsApp booking
+    card.querySelector(".book-btn").onclick=()=>{
+      const msg=encodeURIComponent(
+        "Hello, I saw your guest house on Accolink. Kindly let me know if you have any rooms available."
+      );
+      window.open(`https://wa.me/${house.whatsapp}?text=${msg}`);
+    };
+
+    // Favourite
+    const fav=card.querySelector(".fav");
+    fav.onclick=()=>{
+      if(favourites.includes(house.name)){
+        favourites=favourites.filter(f=>f!==house.name);
+        fav.classList.remove("active");
+      }else{
+        favourites.push(house.name);
+        fav.classList.add("active");
+      }
+      localStorage.setItem("favourites",JSON.stringify(favourites));
+    };
+
+    grid.appendChild(card);
+
+    new Swiper(`.s-${i}`,{loop:true});
+  });
+}
+
+render(listings);
+
+// ================= SEARCH =================
+search.addEventListener("input",e=>{
+  const v=e.target.value.toLowerCase();
+  render(listings.filter(l=>
+    l.name.toLowerCase().includes(v) ||
+    l.location.toLowerCase().includes(v)
+  ));
+});
+</script>
+
+</body>
+</html>
